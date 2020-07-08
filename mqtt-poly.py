@@ -8,6 +8,7 @@ import json
 
 LOGGER = polyinterface.LOGGER
 
+
 class Controller(polyinterface.Controller):
     def __init__(self, polyglot):
         super().__init__(polyglot)
@@ -43,7 +44,8 @@ class Controller(polyinterface.Controller):
         self.mqtt_user = self.polyConfig['customParams']['mqtt_user']
         self.mqtt_password = self.polyConfig['customParams']['mqtt_password']
         try:
-            self.devlist = json.loads(self.polyConfig['customParams']['devlist'])
+            self.devlist = json.loads(
+                self.polyConfig['customParams']['devlist'])
         except Exception as ex:
             LOGGER.error('Failed to parse the devlist: {}'.format(ex))
             return False
@@ -56,19 +58,22 @@ class Controller(polyinterface.Controller):
 
         for dev in self.devlist:
             if 'id' not in dev or 'status_topic' not in dev or 'cmd_topic' not in dev or 'type' not in dev:
-                LOGGER.error('Invalid device definition: {}'.format(json.dumps(dev)))
+                LOGGER.error('Invalid device definition: {}'.format(
+                    json.dumps(dev)))
                 continue
             name = dev['id']
             address = name.lower()[:14]
             if dev['type'] == 'switch':
                 if not address is self.nodes:
                     LOGGER.info('Adding {} {}'.format(dev['type'], name))
-                    self.addNode(MQSwitch(self, self.address, address, name, dev))
+                    self.addNode(
+                        MQSwitch(self, self.address, address, name, dev))
                     self.status_topics.append(dev['status_topic'])
             elif dev['type'] == 'sensor':
                 if not address is self.nodes:
                     LOGGER.info('Adding {} {}'.format(dev['type'], name))
-                    self.addNode(MQSensor(self, self.address, address, name, dev))
+                    self.addNode(
+                        MQSensor(self, self.address, address, name, dev))
                     self.status_topics.append(dev['status_topic'])
             elif dev['type'] == 'TempHumid':
                 if not address is self.nodes:
@@ -83,12 +88,14 @@ class Controller(polyinterface.Controller):
             elif dev['type'] == 'distance':
                 if not address is self.nodes:
                     LOGGER.info('Adding {} {}'.format(dev['type'], name))
-                    self.addNode(MQhcsr(self, self.address, address, name, dev))
+                    self.addNode(MQhcsr(self, self.address, address, name,
+                                        dev))
                     self.status_topics.append(dev['status_topic'])
             elif dev['type'] == 'analog':
                 if not address is self.nodes:
                     LOGGER.info('Adding {} {}'.format(dev['type'], name))
-                    self.addNode(MQAnalog(self, self.address, address, name, dev))
+                    self.addNode(
+                        MQAnalog(self, self.address, address, name, dev))
                     self.status_topics.append(dev['status_topic'])
             elif dev['type'] == 's31':
                 if not address is self.nodes:
@@ -96,7 +103,8 @@ class Controller(polyinterface.Controller):
                     self.addNode(MQs31(self, self.address, address, name, dev))
                     self.status_topics.append(dev['status_topic'])
             else:
-                LOGGER.error('Device type {} is not yet supported'.format(dev['type']))
+                LOGGER.error('Device type {} is not yet supported'.format(
+                    dev['type']))
         LOGGER.info('Done adding nodes, connecting to MQTT broker...')
         self.mqttc.username_pw_set(self.mqtt_user, self.mqtt_password)
         try:
@@ -117,9 +125,12 @@ class Controller(polyinterface.Controller):
                 results.append((stopic, tuple(self.mqttc.subscribe(stopic))))
             for (topic, (result, mid)) in results:
                 if result == 0:
-                    LOGGER.info('Subscribed to {} MID: {}, res: {}'.format(topic, mid, result))
+                    LOGGER.info('Subscribed to {} MID: {}, res: {}'.format(
+                        topic, mid, result))
                 else:
-                    LOGGER.error('Failed to subscribe {} MID: {}, res: {}'.format(topic, mid, result))
+                    LOGGER.error(
+                        'Failed to subscribe {} MID: {}, res: {}'.format(
+                            topic, mid, result))
             for node in self.nodes:
                 if self.nodes[node].address != self.address:
                     self.nodes[node].query()
@@ -133,7 +144,8 @@ class Controller(polyinterface.Controller):
             try:
                 self.mqttc.reconnect()
             except Exception as ex:
-                LOGGER.error('Error connecting to Poly MQTT broker {}'.format(ex))
+                LOGGER.error(
+                    'Error connecting to Poly MQTT broker {}'.format(ex))
                 return False
         else:
             LOGGER.info('Poly MQTT graceful disconnection')
@@ -211,14 +223,11 @@ class MQSwitch(polyinterface.Node):
         self.controller.mqtt_pub(self.cmd_topic, '')
         self.reportDrivers()
 
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 78}
-              ]
+    drivers = [{'driver': 'ST', 'value': 0, 'uom': 78}]
 
     id = 'MQSW'
 
-    commands = {
-            'QUERY': query, 'DON': set_on, 'DOF': set_off
-               }
+    commands = {'QUERY': query, 'DON': set_on, 'DOF': set_off}
 
 
 class MQSensor(polyinterface.Node):
@@ -235,7 +244,8 @@ class MQSensor(polyinterface.Node):
         try:
             data = json.loads(payload)
         except Exception as ex:
-            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(ex, payload))
+            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(
+                ex, payload))
             return False
 
         # motion detector
@@ -281,7 +291,6 @@ class MQSensor(polyinterface.Node):
                 if 'b' in data['color']:
                     self.setDriver('GV4', data['color']['b'])
 
-
     def led_on(self, command):
         self.controller.mqtt_pub(self.cmd_topic, json.dumps({'state': 'ON'}))
 
@@ -296,7 +305,15 @@ class MQSensor(polyinterface.Node):
         brightness = self._check_limit(int(query.get('I.uom100')))
         transition = int(query.get('D.uom58'))
         flash = int(query.get('F.uom58'))
-        cmd = { 'state': 'ON', 'brightness': brightness, 'color': {'r': red, 'g': green, 'b': blue } }
+        cmd = {
+            'state': 'ON',
+            'brightness': brightness,
+            'color': {
+                'r': red,
+                'g': green,
+                'b': blue
+            }
+        }
         if transition > 0:
             cmd['transition'] = transition
         if flash > 0:
@@ -315,23 +332,56 @@ class MQSensor(polyinterface.Node):
     def query(self, command=None):
         self.reportDrivers()
 
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 2},
-               {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
-               {'driver': 'GPV', 'value': 0, 'uom': 17},
-               {'driver': 'CLIHUM', 'value': 0, 'uom': 22},
-               {'driver': 'LUMIN', 'value': 0, 'uom': 36},
-               {'driver': 'GV0', 'value': 0, 'uom': 78},
-               {'driver': 'GV1', 'value': 0, 'uom': 100},
-               {'driver': 'GV2', 'value': 0, 'uom': 100},
-               {'driver': 'GV3', 'value': 0, 'uom': 100},
-               {'driver': 'GV4', 'value': 0, 'uom': 100}
-              ]
+    drivers = [{
+        'driver': 'ST',
+        'value': 0,
+        'uom': 2
+    }, {
+        'driver': 'CLITEMP',
+        'value': 0,
+        'uom': 17
+    }, {
+        'driver': 'GPV',
+        'value': 0,
+        'uom': 17
+    }, {
+        'driver': 'CLIHUM',
+        'value': 0,
+        'uom': 22
+    }, {
+        'driver': 'LUMIN',
+        'value': 0,
+        'uom': 36
+    }, {
+        'driver': 'GV0',
+        'value': 0,
+        'uom': 78
+    }, {
+        'driver': 'GV1',
+        'value': 0,
+        'uom': 100
+    }, {
+        'driver': 'GV2',
+        'value': 0,
+        'uom': 100
+    }, {
+        'driver': 'GV3',
+        'value': 0,
+        'uom': 100
+    }, {
+        'driver': 'GV4',
+        'value': 0,
+        'uom': 100
+    }]
 
     id = 'MQSENS'
 
     commands = {
-            'QUERY': query, 'DON': led_on, 'DOF': led_off, 'SETLED': led_set
-               }
+        'QUERY': query,
+        'DON': led_on,
+        'DOF': led_off,
+        'SETLED': led_set
+    }
 
 
 # This class is an attempt to add support for temperature/humidity sensors.
@@ -351,28 +401,41 @@ class MQdht(polyinterface.Node):
         try:
             data = json.loads(payload)
         except Exception as ex:
-            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(ex, payload))
+            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(
+                ex, payload))
             return False
         if 'AM2301' in data:
             self.setDriver('ST', 1)
             self.setDriver('CLITEMP', data['AM2301']['Temperature'])
             self.setDriver('CLIHUM', data['AM2301']['Humidity'])
+        elif 'DS18B20' in data:
+            self.setDriver('ST', 1)
+            self.setDriver('CLITEMP', data['DS18B20']['Temperature'])
+            self.setDriver('CLIHUM', 0)
         else:
             self.setDriver('ST', 0)
 
     def query(self, command=None):
         self.reportDrivers()
 
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 2},
-               {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
-               {'driver': 'CLIHUM', 'value': 0, 'uom': 22}
-              ]
+    drivers = [{
+        'driver': 'ST',
+        'value': 0,
+        'uom': 2
+    }, {
+        'driver': 'CLITEMP',
+        'value': 0,
+        'uom': 17
+    }, {
+        'driver': 'CLIHUM',
+        'value': 0,
+        'uom': 22
+    }]
 
     id = 'MQDHT'
 
-    commands = {
-            'QUERY': query
-               }
+    commands = {'QUERY': query}
+
 
 # This class is an attempt to add support for temperature/humidity/pressure sensors.
 # Currently supports the BME280.  Could be extended to accept others.
@@ -388,7 +451,8 @@ class MQbme(polyinterface.Node):
         try:
             data = json.loads(payload)
         except Exception as ex:
-            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(ex, payload))
+            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(
+                ex, payload))
             return False
         if 'BME280' in data:
             self.setDriver('ST', 1)
@@ -396,7 +460,10 @@ class MQbme(polyinterface.Node):
             self.setDriver('CLIHUM', data['BME280']['Humidity'])
             # Converting to "Hg, could do this in sonoff-tomasto
             # or just report the raw hPA (or convert to kPA).
-            press = format(round(float('.02952998751') * float(data['BME280']['Pressure']),2))
+            press = format(
+                round(
+                    float('.02952998751') * float(data['BME280']['Pressure']),
+                    2))
             self.setDriver('BARPRES', press)
         else:
             self.setDriver('ST', 0)
@@ -404,17 +471,27 @@ class MQbme(polyinterface.Node):
     def query(self, command=None):
         self.reportDrivers()
 
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 2},
-               {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
-               {'driver': 'CLIHUM', 'value': 0, 'uom': 22},
-               {'driver': 'BARPRES', 'value': 0, 'uom': 23}
-              ]
+    drivers = [{
+        'driver': 'ST',
+        'value': 0,
+        'uom': 2
+    }, {
+        'driver': 'CLITEMP',
+        'value': 0,
+        'uom': 17
+    }, {
+        'driver': 'CLIHUM',
+        'value': 0,
+        'uom': 22
+    }, {
+        'driver': 'BARPRES',
+        'value': 0,
+        'uom': 23
+    }]
 
     id = 'MQBME'
 
-    commands = {
-            'QUERY': query
-               }
+    commands = {'QUERY': query}
 
 
 # This class is an attempt to add support for HC-SR04 Ultrasonic Sensor.
@@ -431,7 +508,8 @@ class MQhcsr(polyinterface.Node):
         try:
             data = json.loads(payload)
         except Exception as ex:
-            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(ex, payload))
+            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(
+                ex, payload))
             return False
         if 'SR04' in data:
             self.setDriver('ST', 1)
@@ -443,18 +521,23 @@ class MQhcsr(polyinterface.Node):
     def query(self, command=None):
         self.reportDrivers()
 
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 2},
-               {'driver': 'DISTANC', 'value': 0, 'uom': 5}
-              ]
+    drivers = [{
+        'driver': 'ST',
+        'value': 0,
+        'uom': 2
+    }, {
+        'driver': 'DISTANC',
+        'value': 0,
+        'uom': 5
+    }]
 
     id = 'MQHCSR'
 
-    commands = {
-            'QUERY': query
-               }
+    commands = {'QUERY': query}
+
 
 # General purpose Analog input using ADC.
-# Setting max value in editor.xml as 1024, as that would be the max for 
+# Setting max value in editor.xml as 1024, as that would be the max for
 # onboard ADC, but that might need to be changed for external ADCs.
 class MQAnalog(polyinterface.Node):
     def __init__(self, controller, primary, address, name, device):
@@ -468,9 +551,10 @@ class MQAnalog(polyinterface.Node):
         try:
             data = json.loads(payload)
         except Exception as ex:
-            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(ex, payload))
+            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(
+                ex, payload))
             return False
-        if  'ANALOG' in data:
+        if 'ANALOG' in data:
             self.setDriver('ST', 1)
             self.setDriver('GPV', data['ANALOG']['A0'])
         else:
@@ -482,15 +566,21 @@ class MQAnalog(polyinterface.Node):
 
 # GPV = "General Purpose Value"
 # UOM:56 = "The raw value reported by device"
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 2},
-               {'driver': 'GPV', 'value': 0, 'uom': 56}
-              ]
+
+    drivers = [{
+        'driver': 'ST',
+        'value': 0,
+        'uom': 2
+    }, {
+        'driver': 'GPV',
+        'value': 0,
+        'uom': 56
+    }]
 
     id = 'MQANAL'
 
-    commands = {
-            'QUERY': query
-               }
+    commands = {'QUERY': query}
+
 
 # Reading the telemetry data for a Sonoff S31 (use the switch for control)
 class MQs31(polyinterface.Node):
@@ -505,9 +595,10 @@ class MQs31(polyinterface.Node):
         try:
             data = json.loads(payload)
         except Exception as ex:
-            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(ex, payload))
+            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(
+                ex, payload))
             return False
-        if  'ENERGY' in data:
+        if 'ENERGY' in data:
             self.setDriver('ST', 1)
             self.setDriver('CC', data['ENERGY']['Current'])
             self.setDriver('CPW', data['ENERGY']['Power'])
@@ -520,20 +611,35 @@ class MQs31(polyinterface.Node):
     def query(self, command=None):
         self.reportDrivers()
 
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 2},
-               {'driver': 'CC', 'value': 0, 'uom': 1},
-               {'driver': 'CPW', 'value': 0, 'uom': 73},
-               {'driver': 'CV', 'value': 0, 'uom': 72},
-               {'driver': 'PF', 'value': 0, 'uom': 53},
-               {'driver': 'TPW', 'value': 0, 'uom': 33}
-              ]
+    drivers = [{
+        'driver': 'ST',
+        'value': 0,
+        'uom': 2
+    }, {
+        'driver': 'CC',
+        'value': 0,
+        'uom': 1
+    }, {
+        'driver': 'CPW',
+        'value': 0,
+        'uom': 73
+    }, {
+        'driver': 'CV',
+        'value': 0,
+        'uom': 72
+    }, {
+        'driver': 'PF',
+        'value': 0,
+        'uom': 53
+    }, {
+        'driver': 'TPW',
+        'value': 0,
+        'uom': 33
+    }]
 
     id = 'MQS31'
 
-    commands = {
-            'QUERY': query
-               }
-
+    commands = {'QUERY': query}
 
 
 if __name__ == "__main__":
