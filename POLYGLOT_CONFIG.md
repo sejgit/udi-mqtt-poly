@@ -5,9 +5,6 @@
 
 This Poly provides an interface between MQTT broker and [Polyglot v2](https://github.com/UniversalDevicesInc/polyglot-v2) server.
 
-[This thread](https://forum.universal-devices.com/topic/24538-sonoff/?tab=comments#comment-244571) on UDI forums has more details, ask questions there.
-
-Note - your Sonoff MUST run the [Sonoff-Tasmota](https://github.com/arendst/Sonoff-Tasmota) firmware in order to work with MQTT!
 
  1. You will need a MQTT broker running (can be on RPi running Polyglot).
 	 -  See post #1 in [this thread](https://forum.universal-devices.com/topic/24538-sonoff) on how to setup.
