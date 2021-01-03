@@ -729,7 +729,7 @@ class MQRGBWstrip(polyinterface.Node):
     def led_off(self, command):
         self.controller.mqtt_pub(self.cmd_topic, json.dumps({'state': 'OFF'}))
 
-    def led_set(self, command):
+    def rgbw_set(self, command):
         query = command.get('query')
         red = self._check_limit(int(query.get('R.uom100')))
         green = self._check_limit(int(query.get('G.uom100')))
@@ -767,7 +767,7 @@ class MQRGBWstrip(polyinterface.Node):
     id = 'MQRGBW'
 
     commands = {
-            'QUERY': query, 'DON': led_on, 'DOF': led_off, 'SETLED': led_set
+            'QUERY': query, 'DON': led_on, 'DOF': led_off, 'SETRGBW': rgbw_set
                }
 
 
