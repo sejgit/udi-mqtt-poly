@@ -118,12 +118,12 @@ CMD-STRIP-DON-NAME = RGBW On
 CMD-STRIP-DOF-NAME = RGBW Off
 CMD-STRIP-SETRGBW-NAME = RGBW Strip State
 
-CMDQ-R-NAME = Red
-CMDQ-G-NAME = Green
-CMDQ-B-NAME = Blue
-CMDQ-I-NAME = Brightness
-CMDQ-B-NAME = White
-CMDQ-P-NAME = Program
+CMDP-STRIPR-NAME = Red
+CMDP-STRIPG-NAME = Green
+CMDP-STRIPB-NAME = Blue
+CMDP-STRIPI-NAME = Brightness
+CMDP-STRIPB-NAME = White
+CMDP-STRIPP-NAME = Program
 
 PGM-CMD-SETRGBW-FMT = /R// Red ${v}/ /G// Green ${v}/ /B// Blue ${v}/ /W// White ${v}/ /I// Brightness ${v}/ /P// Program ${v}/
 
