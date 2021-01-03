@@ -731,12 +731,12 @@ class MQRGBWstrip(polyinterface.Node):
 
     def rgbw_set(self, command):
         query = command.get('query')
-        red = self._check_limit(int(query.get('R.uom100')))
-        green = self._check_limit(int(query.get('G.uom100')))
-        blue = self._check_limit(int(query.get('B.uom100')))
-        white = self._check_limit(int(query.get('W.uom100')))
-        brightness = self._check_limit(int(query.get('I.uom100')))
-        program = self._check_limit(int(query.get('P.uom100')))
+        red = self._check_limit(int(query.get('STRIPR.uom100')))
+        green = self._check_limit(int(query.get('STRIPG.uom100')))
+        blue = self._check_limit(int(query.get('STRIPB.uom100')))
+        white = self._check_limit(int(query.get('STRIPW.uom100')))
+        brightness = self._check_limit(int(query.get('STRIPI.uom100')))
+        program = self._check_limit(int(query.get('STRIPP.uom100')))
         cmd = { 'state': 'ON', 'brightness': brightness, 'color': {'r': red, 'g': green, 'b': blue, 'w': white}, 'program': program}
 
         self.controller.mqtt_pub(self.cmd_topic, json.dumps(cmd))
