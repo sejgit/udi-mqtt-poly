@@ -125,5 +125,5 @@ CMDP-STRIPW-NAME = White
 CMDP-STRIPI-NAME = Brightness
 CMDP-STRIPP-NAME = Program
 
-PGM-CMD-SETRGBW-FMT = /R// Red ${v}/ /G// Green ${v}/ /B// Blue ${v}/ /W// White ${v}/ /I// Brightness ${v}/ /P// Program ${v}/
+PGM-CMD-SETRGBW-FMT = /STRIPR// Red ${v}/ /STRIPG// Green ${v}/ /STRIPB// Blue ${v}/ /STRIPW// White ${v}/ /STRIPI// Brightness ${v}/ /STRIPP// Program ${v}/
 
