@@ -129,6 +129,11 @@ class Controller(polyinterface.Controller):
                     LOGGER.info('Adding {} {}'.format(dev['type'], name))
                     self.addNode(MQs31(self, self.address, address, name, dev))
                     self.status_topics.append(dev['status_topic'])
+            elif dev['type'] == 'RGBW':
+                if not address is self.nodes:
+                    LOGGER.info('Adding {} {}'.format(dev['type'], name))
+                    self.addNode(MQRGBWstrip(self, self.address, address, name, dev))
+                    self.status_topics.append(dev['status_topic'])
             else:
                 LOGGER.error('Device type {} is not yet supported'.format(dev['type']))
         LOGGER.info('Done adding nodes, connecting to MQTT broker...')
@@ -678,6 +683,92 @@ class MQs31(polyinterface.Node):
             'QUERY': query
                }
 
+# Class for an RGBW strip powered through a microController running MQTT client
+# able to set colours and run different transition programs
+class MQRGBWstrip(polyinterface.Node):
+    def __init__(self, controller, primary, address, name, device):
+        super().__init__(controller, primary, address, name)
+        self.cmd_topic = device['cmd_topic']
+        self.on = False
+        self.motion = False
+
+    def start(self):
+        pass
+
+    def updateInfo(self, payload):
+        try:
+            data = json.loads(payload)
+        except Exception as ex:
+            LOGGER.error('Failed to parse MQTT Payload as Json: {} {}'.format(ex, payload))
+            return False
+
+        # LED
+        if 'state' in data:
+            # LED is present
+            if data['state'] == 'ON':
+                self.setDriver('GV0', 100)
+            else:
+                self.setDriver('GV0', 0)
+            if 'brightness' in data:
+                self.setDriver('GV1', data['brightness'])
+            if 'color' in data:
+                if 'r' in data['color']:
+                    self.setDriver('GV2', data['color']['r'])
+                if 'g' in data['color']:
+                    self.setDriver('GV3', data['color']['g'])
+                if 'b' in data['color']:
+                    self.setDriver('GV4', data['color']['b'])
+                if 'w' in data['color']:
+                    self.setDriver('GV5', data['color']['w'])
+            if 'program' in data:
+                self.setDriver('GV6', data['program'])
+
+    def led_on(self, command):
+        self.controller.mqtt_pub(self.cmd_topic, json.dumps({'state': 'ON'}))
+
+    def led_off(self, command):
+        self.controller.mqtt_pub(self.cmd_topic, json.dumps({'state': 'OFF'}))
+
+    def led_set(self, command):
+        query = command.get('query')
+        red = self._check_limit(int(query.get('R.uom100')))
+        green = self._check_limit(int(query.get('G.uom100')))
+        blue = self._check_limit(int(query.get('B.uom100')))
+        white = self._check_limit(int(query.get('W.uom100')))
+        brightness = self._check_limit(int(query.get('I.uom100')))
+        program = int(query.get('P.uom78'))
+        cmd = { 'state': 'ON', 'brightness': brightness, 'color': {'r': red, 'g': green, 'b': blue, 'w': white}}
+        if program > 0:
+            cmd['program'] = program
+
+        self.controller.mqtt_pub(self.cmd_topic, json.dumps(cmd))
+
+    def _check_limit(self, value):
+        if value > 255:
+            return 255
+        elif value < 0:
+            return 0
+        else:
+            return value
+
+    def query(self, command=None):
+        self.reportDrivers()
+
+    drivers = [{'driver': 'ST', 'value': 0, 'uom': 2},
+               {'driver': 'GV0', 'value': 0, 'uom': 78},
+               {'driver': 'GV1', 'value': 0, 'uom': 100},
+               {'driver': 'GV2', 'value': 0, 'uom': 100},
+               {'driver': 'GV3', 'value': 0, 'uom': 100},
+               {'driver': 'GV4', 'value': 0, 'uom': 100},
+               {'driver': 'GV5', 'value': 0, 'uom': 100},
+               {'driver': 'GV6', 'value': 0, 'uom': 78}
+               ]
+
+    id = 'MQRGBW'
+
+    commands = {
+            'QUERY': query, 'DON': led_on, 'DOF': led_off, 'SETLED': led_set
+               }
 
 
 if __name__ == "__main__":

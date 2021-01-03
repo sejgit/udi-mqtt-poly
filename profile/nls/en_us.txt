@@ -101,3 +101,29 @@ FLAG-9 = TRIGGER
 FLAG-10 = ON
 FLAG-11 = OFF
 FLAG-12 = ---
+
+# rgbw srip
+ND-MQRGBW-NAME = MQTT RGBW Strip
+ND-MQSENS-ICON = GenericCtl
+
+ST-STRIP-GV0-NAME = RGBW OnOff
+ST-STRIP-GV1-NAME = RGBW Brightness
+ST-STRIP-GV2-NAME = RGBW Color Red
+ST-STRIP-GV3-NAME = RGBW Color Green
+ST-STRIP-GV4-NAME = RGBW Color Blue
+ST-STRIP-GV5-NAME = RGBW Color White
+ST-STRIP-GV6-NAME = RGBW Strip Program
+
+CMD-STRIP-DON-NAME = RGBW On
+CMD-STRIP-DOF-NAME = RGBW Off
+CMD-STRIP-SETRGBW-NAME = RGBW Strip State
+
+CMDQ-R-NAME = Red
+CMDQ-G-NAME = Green
+CMDQ-B-NAME = Blue
+CMDQ-I-NAME = Brightness
+CMDQ-B-NAME = White
+CMDQ-P-NAME = Program
+
+PGM-CMD-SETRGBW-FMT = /R// Red ${v}/ /G// Green ${v}/ /B// Blue ${v}/ /W// White ${v}/ /I// Brightness ${v}/ /P// Program ${v}/
+

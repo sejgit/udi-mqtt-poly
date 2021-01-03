@@ -162,4 +162,35 @@
             </accepts>
         </cmds>
     </nodeDef>
+    <nodeDef id="MQRGBW" nls="STRIP">
+        <editors />
+        <sts>
+            <st id="GV0" editor="ONOFF" />
+            <st id="GV1" editor="LEDCLR" />
+            <st id="GV2" editor="LEDCLR" />
+            <st id="GV3" editor="LEDCLR" />
+            <st id="GV4" editor="LEDCLR" />
+            <st id="GV5" editor="LEDCLR" />
+            <st id="GV6" editor="ONOFF" />
+        </sts>
+        <cmds>
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+            </sends>
+            <accepts>
+                <cmd id="QUERY" />
+                <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="SETRGBW">
+                    <q id="I" editor="LEDCLR" init="GV1" />
+                    <q id="R" editor="LEDCLR" init="GV2" />
+                    <q id="G" editor="LEDCLR" init="GV3" />
+                    <q id="B" editor="LEDCLR" init="GV4" />
+                    <q id="W" editor="LEDCLR" init="GV5" />
+                    <q id="P" editor="ONOFF" init="GV6" />
+                </cmd>
+            </accepts>
+        </cmds>
+    </nodeDef>
 </nodeDefs>
