@@ -736,7 +736,7 @@ class MQRGBWstrip(polyinterface.Node):
         blue = self._check_limit(int(query.get('B.uom100')))
         white = self._check_limit(int(query.get('W.uom100')))
         brightness = self._check_limit(int(query.get('I.uom100')))
-        program = int(query.get('P.uom78'))
+        program = int(query.get('P.uom100'))
         cmd = { 'state': 'ON', 'brightness': brightness, 'color': {'r': red, 'g': green, 'b': blue, 'w': white}}
         if program > 0:
             cmd['program'] = program
@@ -761,7 +761,7 @@ class MQRGBWstrip(polyinterface.Node):
                {'driver': 'GV3', 'value': 0, 'uom': 100},
                {'driver': 'GV4', 'value': 0, 'uom': 100},
                {'driver': 'GV5', 'value': 0, 'uom': 100},
-               {'driver': 'GV6', 'value': 0, 'uom': 78}
+               {'driver': 'GV6', 'value': 0, 'uom': 100}
                ]
 
     id = 'MQRGBW'

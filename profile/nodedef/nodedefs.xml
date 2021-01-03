@@ -171,7 +171,7 @@
             <st id="GV3" editor="LEDCLR" />
             <st id="GV4" editor="LEDCLR" />
             <st id="GV5" editor="LEDCLR" />
-            <st id="GV6" editor="ONOFF" />
+            <st id="GV6" editor="LEDCLR" />
         </sts>
         <cmds>
             <sends>
@@ -188,7 +188,7 @@
                     <p id="STRIPG" editor="LEDCLR" init="GV3" />
                     <p id="STRIPB" editor="LEDCLR" init="GV4" />
                     <p id="STRIPW" editor="LEDCLR" init="GV5" />
-                    <p id="STRIPP" editor="ONOFF" init="GV6" />
+                    <p id="STRIPP" editor="LEDCLR" init="GV6" />
                 </cmd>
             </accepts>
         </cmds>

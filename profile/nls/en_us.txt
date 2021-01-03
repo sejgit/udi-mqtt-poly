@@ -121,8 +121,8 @@ CMD-STRIP-SETRGBW-NAME = RGBW Strip State
 CMDP-STRIPR-NAME = Red
 CMDP-STRIPG-NAME = Green
 CMDP-STRIPB-NAME = Blue
+CMDP-STRIPW-NAME = White
 CMDP-STRIPI-NAME = Brightness
-CMDP-STRIPB-NAME = White
 CMDP-STRIPP-NAME = Program
 
 PGM-CMD-SETRGBW-FMT = /R// Red ${v}/ /G// Green ${v}/ /B// Blue ${v}/ /W// White ${v}/ /I// Brightness ${v}/ /P// Program ${v}/
